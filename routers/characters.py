@@ -63,17 +63,52 @@ def update_character(character_id: int, updated_character: Character):
 @router.delete("/characters/{character_id}", tags=["Персонажи"], status_code=status.HTTP_202_ACCEPTED,
                summary="Удалить персонажа")
 def delete_character(character_id: int):
-    character_index = next((index for index, c in enumerate(characters_db) if c.id == character_id), None)
+    try:
+        # Поиск персонажа по ID
+        character_index = next((index for index, c in enumerate(characters_db) if c.id == character_id), None)
 
-    if character_index is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Character not found"
+        # Если персонаж не найден
+        if character_index is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Character not found"
+            )
+
+        # Удаление персонажа
+        del characters_db[character_index]
+
+        # Возвращаем успешный ответ
+        return {"message": "Character deleted"}
+
+    except HTTPException as e:
+        # Пробрасываем HTTPException дальше
+        raise e
+    except Exception as e:
+        # В случае других ошибок возвращаем 500
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "status": 500,
+                "reason": str(e)
+            }
         )
 
-    del characters_db[character_index]
+# @router.delete("/characters/{character_id}", tags=["Персонажи"], status_code=status.HTTP_202_ACCEPTED,
+#                summary="Удалить персонажа")
+# def delete_character(character_id: int):
+#     character_index = next((index for index, c in enumerate(characters_db) if c.id == character_id), None)
+#
+#     if character_index is None:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail="Character not found"
+#         )
+#
+#     del characters_db[character_index]
+#
+#     return {"message": "Character deleted"}
 
-    return {"message": "Character deleted"}
+
 # @router.delete("/characters/{character_id}", response_model=Character, tags=["GKBP Персонажи"], summary="Удалить персонажа")
 # def delete_character(character_id: int):
 #     try:
