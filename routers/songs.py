@@ -20,12 +20,14 @@ songs_db = [
 ]
 
 
-@router.get("/songs/", response_model=list[Song], tags=["Песни 🎶"])
+@router.get("/songs/", response_model=list[Song], tags=["Песни 🎶"],
+            summary="Получить все песни")
 def get_songs():
     return songs_db
 
 
-@router.get("/songs/{song_id}", response_model=Song, tags=["Песни 🎶"])
+@router.get("/songs/{song_id}", response_model=Song, tags=["Песни 🎶"],
+            summary="Получить конкретную песню по id")
 def get_song(song_id: int):
     song = next((s for s in songs_db if s.id == song_id), None)
     if song is None:
@@ -33,13 +35,14 @@ def get_song(song_id: int):
     return song
 
 
-@router.post("/songs/", response_model=Song, tags=["Песни 🎶"])
+@router.post("/songs/", response_model=Song, tags=["Песни 🎶"], summary="Добавить новую песню")
 def create_song(song: Song):
     songs_db.append(song)
     return song
 
 
-@router.patch("/songs/{song_id}", response_model=Song, tags=["Песни 🎶"])
+@router.patch("/songs/{song_id}", response_model=Song, tags=["Песни 🎶"],
+              summary="Обновить информацию о песне по id")
 def update_song(song_id: int, updated_song: Song):
     song = next((s for s in songs_db if s.id == song_id), None)
     if song is None:

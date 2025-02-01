@@ -17,12 +17,14 @@ families_db = [
 ]
 
 
-@router.get("/families/", response_model=list[Family], tags=["Семьи 👨‍👩‍👧‍👦"])
+@router.get("/families/", response_model=list[Family], tags=["Семьи 👨‍👩‍👧‍👦"],
+            summary="Получить все семьи")
 def get_families():
     return families_db
 
 
-@router.get("/families/{family_id}", response_model=Family, tags=["Семьи 👨‍👩‍👧‍👦"])
+@router.get("/families/{family_id}", response_model=Family, tags=["Семьи 👨‍👩‍👧‍👦"],
+            summary="Получить конкретную семью по id")
 def get_family(family_id: int):
     family = next((f for f in families_db if f.id == family_id), None)
     if family is None:
@@ -30,13 +32,14 @@ def get_family(family_id: int):
     return family
 
 
-@router.post("/families/", response_model=Family, tags=["Семьи 👨‍👩‍👧‍👦"])
+@router.post("/families/", response_model=Family, tags=["Семьи 👨‍👩‍👧‍👦"], summary="Добавить новую семью")
 def create_family(family: Family):
     families_db.append(family)
     return family
 
 
-@router.patch("/families/{family_id}", response_model=Family, tags=["Семьи 👨‍👩‍👧‍👦"])
+@router.patch("/families/{family_id}", response_model=Family, tags=["Семьи 👨‍👩‍👧‍👦"],
+              summary="Обновить информацию о семье по id")
 def update_family(family_id: int, updated_family: Family):
     family = next((f for f in families_db if f.id == family_id), None)
     if family is None:
@@ -47,7 +50,8 @@ def update_family(family_id: int, updated_family: Family):
     return family
 
 
-@router.delete("/families/{family_id}", tags=["Семьи"], status_code=status.HTTP_202_ACCEPTED, summary="Удалить семью")
+@router.delete("/families/{family_id}", tags=["Семьи 👨‍👩‍👧‍👦"], status_code=status.HTTP_202_ACCEPTED,
+               summary="Удалить семью")
 def delete_family(family_id: int):
     family_index = next((index for index, f in enumerate(families_db) if f.id == family_id), None)
 
