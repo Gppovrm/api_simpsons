@@ -9,7 +9,8 @@ router = APIRouter()
 families_db = [
     Family(id=1, name="The Simpsons", members=[1, 2, 3, 4, 5], description="The main family of the show."),
     Family(id=2, name="The Flanders", members=[6], description="The Simpsons' religious neighbors."),
-    Family(id=3, name="The Burns", members=[], description="The wealthy and influential owner of the Springfield Nuclear Power Plant."),
+    Family(id=3, name="The Burns", members=[],
+           description="The wealthy and influential owner of the Springfield Nuclear Power Plant."),
     Family(id=4, name="The Krustofskys", members=[8], description="The family of Krusty the Clown."),
     Family(id=5, name="The Wiggums", members=[9], description="The family of Chief Wiggum."),
     Family(id=6, name="The Van Houtens", members=[10], description="Milhouse's family.")
@@ -45,30 +46,44 @@ def update_family(family_id: int, updated_family: Family):
     family.description = updated_family.description
     return family
 
-@router.delete("/families/{family_id}", tags=["Семьи 👨‍👩‍👧‍👦"])
+
+@router.delete("/families/{family_id}", tags=["Семьи"], status_code=status.HTTP_202_ACCEPTED, summary="Удалить семью")
 def delete_family(family_id: int):
-    try:
-        # Поиск семьи по ID
-        family_index = next((index for index, f in enumerate(families_db) if f.id == family_id), None)
+    family_index = next((index for index, f in enumerate(families_db) if f.id == family_id), None)
 
-        if family_index is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Family not found"
-            )
-
-        del families_db[family_index]
-
-        return {"message": "Family deleted"}, status.HTTP_202_ACCEPTED
-
-    except Exception as e:
+    if family_index is None:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail={
-                "status": 500,
-                "reason": str(e)
-            }
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Family not found"
         )
+
+    del families_db[family_index]
+
+    return {"message": "Family deleted"}
+# @router.delete("/families/{family_id}", tags=["Семьи 👨‍👩‍👧‍👦"])
+# def delete_family(family_id: int):
+#     try:
+#         # Поиск семьи по ID
+#         family_index = next((index for index, f in enumerate(families_db) if f.id == family_id), None)
+#
+#         if family_index is None:
+#             raise HTTPException(
+#                 status_code=status.HTTP_404_NOT_FOUND,
+#                 detail="Family not found"
+#             )
+#
+#         del families_db[family_index]
+#
+#         return {"message": "Family deleted"}, status.HTTP_202_ACCEPTED
+#
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail={
+#                 "status": 500,
+#                 "reason": str(e)
+#             }
+#         )
 # @router.delete("/families/{family_id}")
 # def delete_family(family_id: int):
 #     global families_db
@@ -86,4 +101,3 @@ def delete_family(family_id: int):
 #         status_code=500,
 #         content={"status": exc.status_code, "reason": exc.detail},
 #     )
-

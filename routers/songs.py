@@ -51,29 +51,42 @@ def update_song(song_id: int, updated_song: Song):
     return song
 
 
-@router.delete("/songs/{song_id}", tags=["Песни 🎶"])
+@router.delete("/songs/{song_id}", tags=["Песни 🎶"], status_code=status.HTTP_202_ACCEPTED, summary="Удалить песню")
 def delete_song(song_id: int):
-    try:
-        song_index = next((index for index, s in enumerate(songs_db) if s.id == song_id), None)
+    song_index = next((index for index, s in enumerate(songs_db) if s.id == song_id), None)
 
-        if song_index is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Song not found"
-            )
-
-        del songs_db[song_index]
-
-        return {"message": "Song deleted"}, status.HTTP_202_ACCEPTED
-
-    except Exception as e:
+    if song_index is None:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail={
-                "status": 500,
-                "reason": str(e)
-            }
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Song not found"
         )
+
+    del songs_db[song_index]
+
+    return {"message": "Song deleted"}
+# @router.delete("/songs/{song_id}", tags=["Песни 🎶"])
+# def delete_song(song_id: int):
+#     try:
+#         song_index = next((index for index, s in enumerate(songs_db) if s.id == song_id), None)
+#
+#         if song_index is None:
+#             raise HTTPException(
+#                 status_code=status.HTTP_404_NOT_FOUND,
+#                 detail="Song not found"
+#             )
+#
+#         del songs_db[song_index]
+#
+#         return {"message": "Song deleted"}, status.HTTP_202_ACCEPTED
+#
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail={
+#                 "status": 500,
+#                 "reason": str(e)
+#             }
+#         )
 # @router.delete("/songs/{song_id}")
 # def delete_song(song_id: int):
 #     global songs_db

@@ -140,23 +140,24 @@ json
 "reason": "<Причина неудачи>"}
 
 ```
-@router.delete("/characters/{character_id}")
+@router.delete("/characters/{character_id}", tags=["Персонажи"], status_code=status.HTTP_202_ACCEPTED,
+               summary="Удалить персонажа")
 def delete_character(character_id: int):
-    global characters_db
-    character = next((c for c in characters_db if c.id == character_id), None)
-    if character is None:
-        raise HTTPException(status_code=404, detail="Character not found")
+    # Поиск персонажа по ID
+    character_index = next((index for index, c in enumerate(characters_db) if c.id == character_id), None)
 
-    characters_db = [c for c in characters_db if c.id != character_id]
-    return {"message": "Character deleted", "status": 202}
+    # Если персонаж не найден
+    if character_index is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Character not found"
+        )
 
+    # Удаление персонажа
+    del characters_db[character_index]
 
-@router.exception_handler(HTTPException)
-def custom_http_exception_handler(request, exc):
-    return JSONResponse(
-        status_code=500,
-        content={"status": exc.status_code, "reason": exc.detail},
-    )
+    # Возвращаем успешный ответ
+    return {"message": "Character deleted"}
 ```
 
 # Подклюим роутеры в main.py
@@ -195,3 +196,6 @@ families_db = [...]
 ![img.png](imgs/img_5.png)
 Прямо на сайте можно все "потыкать"
 ![img.png](imgs/img_6.png)
+
+Проверка для модуля персонажей:
+![img.png](img.png)
